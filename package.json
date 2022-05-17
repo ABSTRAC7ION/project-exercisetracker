@@ -14,7 +14,8 @@
 		"mongodb": "^4.6.0",
 		"mongoose": "^6.3.3",
 		"nanoid": "^3.3.4",
-		"nodemon": "^2.0.16"
+		"nodemon": "^2.0.16",
+		"url": "^0.11.0"
 	},
 	"repository": {
 		"url": "https://github.com/freeCodeCamp/boilerplate-project-exercisetracker"
