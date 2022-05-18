@@ -7,7 +7,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const { nanoid } = require("nanoid");
 const { Db } = require("mongodb");
-const url = require("url");
+const https = require("https");
+const url = require("node:url");
 
 // parse application
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -144,13 +145,24 @@ app.post("/api/users/:_id?/exercises", async function (req, res) {
 });
 
 app.get("/api/users/:_id?/logs", async function (req, res) {
+  //req id from url params
   var _id = req.body["_id"] || req.params._id;
+  //checks to see if user has any saved data
   let logs = await LOG.findOne({
     _id: _id,
   });
+  //gets full url => turns it into URL model => gets everything after '?';
+  const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  var url = new URL(fullUrl);
+  let arr = url.search.split(/\]|\[/).filter(function (e) {
+    return e != "";
+  });
+  arr.shift();
+  console.log(arr);
+
   if (!logs) {
     res.json({
-      err: "no user with this id has been found please check that you entered your id correctly or create a new one",
+      err: "either this user id has no saved exercises or doesn't exist",
     });
   } else {
     res.json({ logs });
