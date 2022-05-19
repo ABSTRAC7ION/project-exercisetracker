@@ -147,10 +147,12 @@ app.post("/api/users/:_id?/exercises", async function (req, res) {
 app.get("/api/users/:_id?/logs", async function (req, res) {
   //req id from url params
   var _id = req.body["_id"] || req.params._id;
+
   //checks to see if user has any saved data
   let logs = await LOG.findOne({
     _id: _id,
   });
+
   //gets full url => turns it into URL model => gets everything after '?';
   const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
   var url = new URL(fullUrl);
@@ -158,12 +160,33 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
     return e != "";
   });
   arr.shift();
-  console.log(arr);
 
+  //if no user exists
   if (!logs) {
     res.json({
       err: "either this user id has no saved exercises or doesn't exist",
     });
+  } else if (arr != "") {
+    console.log("date in url");
+
+    const date1 = new Date(arr[0]).toDateString();
+    const date2 = new Date(arr[1]).toDateString();
+    console.log(date1, date2);
+
+    //find dates between date 1 and 2
+    var resultLog = await LOG.findOne({
+      _id: _id,
+      log: {
+        $elemMatch: {
+          date: {
+            $gte: date1,
+            $lt: date2,
+          },
+        },
+      },
+    });
+    console.log(resultLog);
+    res.json({ resultLog });
   } else {
     res.json({ logs });
   }
