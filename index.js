@@ -80,11 +80,11 @@ app.post("/api/users", async function (req, res) {
 });
 
 //shows all users in database
-app.get("/api/users", async function (req, res){
-  USER.find({}, (error, element) => {
-    res.json({element})
-  });  
-})
+app.get("/api/users", async function (req, res) {
+  USER.find({}, (error, data) => {
+    res.json(data);
+  });
+});
 
 //adds exercises to database
 app.post("/api/users/:_id?/exercises", async function (req, res) {
@@ -121,11 +121,11 @@ app.post("/api/users/:_id?/exercises", async function (req, res) {
     dataStored.save();
     //response
     res.json({
-      _id: logs._id,
       username: logs.username,
       description: description,
       duration: duration,
       date: date,
+      _id: logs._id,
     });
   } else {
     logs = new LOG({
@@ -142,11 +142,11 @@ app.post("/api/users/:_id?/exercises", async function (req, res) {
     });
     await logs.save();
     res.json({
-      _id: logs._id,
       username: logs.username,
       description: description,
       duration: duration,
       date: date,
+      _id: logs._id,
     });
   }
 });
@@ -181,32 +181,33 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
     console.log(date1, date2);
 
     //find dates between date 1 and 2
-    /*var resultLog = await LOG.findOne({
-      _id: _id,
-      log: {
-        $elemMatch: {
-          date: {
-            $gte: date1,
-            $lt: date2,
-          },
-        },
-      },
-    });
-*/
+    let result = [];
     for (let i = 0; i < logs.log.length; i++) {
       let array = [new Date(logs.log[i].date).getTime()];
-      console.log(array);
       for (let j = 0; j < array.length; j++) {
         if (array[j] >= date1 && array[j] <= date2) {
-          let result = [];
           result.push(new Date(array[j]).toDateString());
-          console.log(result);
         }
       }
     }
-    res.json({ logs });
+    //matches dates to array in time period
+    var logData = [];
+    logs.log.forEach((element) => {
+      for (let i = 0; i < result.length; i++) {
+        if (element.date == result[i]) {
+          logData.push(element);
+        }
+      }
+    });
+    //responds with dates between specified time period
+    res.json({
+      username: logs.username,
+      count: logData.length,
+      _id: logs._id,
+      log: logData,
+    });
   } else {
-    res.json({ logs });
+    res.json(logs);
   }
 });
  
