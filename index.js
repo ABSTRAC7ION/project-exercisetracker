@@ -178,7 +178,8 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
 
     const date1 = new Date(arr[0]).getTime();
     const date2 = new Date(arr[1]).getTime();
-    console.log(date1, date2);
+    const limit = arr[2];
+    console.log(date1, date2, limit);
 
     //find dates between date 1 and 2
     let result = [];
@@ -195,7 +196,9 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
     logs.log.forEach((element) => {
       for (let i = 0; i < result.length; i++) {
         if (element.date == result[i]) {
-          logData.push(element);
+          if (logData.length < limit) {
+            logData.push(element);
+          }
         }
       }
     });
