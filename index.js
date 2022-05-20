@@ -178,7 +178,7 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
 
     const date1 = new Date(arr[0]).getTime();
     const date2 = new Date(arr[1]).getTime();
-    const limit = arr[2];
+    const limit = arr[2] == Number ? arr[2] : Infinity;
     console.log(date1, date2, limit);
 
     //find dates between date 1 and 2
