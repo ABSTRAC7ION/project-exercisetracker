@@ -79,6 +79,13 @@ app.post("/api/users", async function (req, res) {
   });
 });
 
+//shows all users in database
+app.get("/api/users", async function (req, res){
+  USER.find({}, (error, element) => {
+    res.json({element})
+  });  
+})
+
 //adds exercises to database
 app.post("/api/users/:_id?/exercises", async function (req, res) {
   var _id = req.body._id;
@@ -169,12 +176,12 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
   } else if (arr != "") {
     console.log("date in url");
 
-    const date1 = new Date(arr[0]).toDateString();
-    const date2 = new Date(arr[1]).toDateString();
+    const date1 = new Date(arr[0]).getTime();
+    const date2 = new Date(arr[1]).getTime();
     console.log(date1, date2);
 
     //find dates between date 1 and 2
-    var resultLog = await LOG.findOne({
+    /*var resultLog = await LOG.findOne({
       _id: _id,
       log: {
         $elemMatch: {
@@ -185,13 +192,24 @@ app.get("/api/users/:_id?/logs", async function (req, res) {
         },
       },
     });
-    console.log(resultLog);
-    res.json({ resultLog });
+*/
+    for (let i = 0; i < logs.log.length; i++) {
+      let array = [new Date(logs.log[i].date).getTime()];
+      console.log(array);
+      for (let j = 0; j < array.length; j++) {
+        if (array[j] >= date1 && array[j] <= date2) {
+          let result = [];
+          result.push(new Date(array[j]).toDateString());
+          console.log(result);
+        }
+      }
+    }
+    res.json({ logs });
   } else {
     res.json({ logs });
   }
 });
-
+ 
 const listener = app.listen(process.env.PORT || 5000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
